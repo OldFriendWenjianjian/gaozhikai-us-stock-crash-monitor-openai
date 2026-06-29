@@ -1,0 +1,11 @@
+[Unit]
+Description=高志凯美股崩盘概率预测程序（openai版）晨间刷新 %i
+After=network-online.target gaozhikai-us-stock-crash-openai.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=__SERVICE_USER__
+Group=__SERVICE_GROUP__
+EnvironmentFile=__ENV_FILE__
+ExecStart=/bin/bash __PROJECT_ROOT__/shared-server/scripts/morning-refresh-%i.sh

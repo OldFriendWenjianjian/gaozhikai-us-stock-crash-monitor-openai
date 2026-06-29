@@ -1,0 +1,19 @@
+[Unit]
+Description=高志凯美股崩盘概率预测程序（openai版）
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__SERVICE_USER__
+Group=__SERVICE_GROUP__
+WorkingDirectory=__APP_WORKDIR__
+EnvironmentFile=__ENV_FILE__
+ExecStart=/usr/bin/env npm start
+Restart=always
+RestartSec=10
+TimeoutStartSec=120
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

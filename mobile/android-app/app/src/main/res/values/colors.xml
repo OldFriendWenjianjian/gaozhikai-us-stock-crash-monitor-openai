@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_bg">#0B0F14</color>
+    <color name="widget_surface">#121821</color>
+    <color name="widget_text">#F7F4ED</color>
+    <color name="widget_muted">#9FA8B4</color>
+    <color name="widget_gold">#E8C45C</color>
+    <color name="widget_line">#2A323C</color>
+    <color name="risk_low">#53C787</color>
+    <color name="risk_mid">#E8C45C</color>
+    <color name="risk_high">#E35D5B</color>
+</resources>

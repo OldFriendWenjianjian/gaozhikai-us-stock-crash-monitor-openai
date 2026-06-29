@@ -1,0 +1,30 @@
+{
+  "name": "usa-market-crash-monitor",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "embed": "node scripts/embed-assets.mjs",
+    "start": "npm run embed && node server/index.js",
+    "test": "node --test",
+    "bundle": "esbuild server/index.js --bundle --platform=node --format=cjs --target=node18 --outfile=build/bundle.cjs",
+    "build:win": "npm run embed && npm run bundle && pkg build/bundle.cjs --targets node22-win-x64 --output dist/美股崩盘概率.exe"
+  },
+  "bin": "build/bundle.cjs",
+  "pkg": {
+    "targets": ["node22-win-x64"],
+    "outputPath": "dist"
+  },
+  "overrides": {
+    "into-stream": "^6.0.0"
+  },
+  "dependencies": {
+    "dotenv": "latest",
+    "express": "latest",
+    "openai": "latest"
+  },
+  "devDependencies": {
+    "@yao-pkg/pkg": "^6.20.0",
+    "esbuild": "^0.28.1"
+  }
+}

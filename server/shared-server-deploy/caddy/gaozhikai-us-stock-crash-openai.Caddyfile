@@ -1,0 +1,13 @@
+__PUBLIC_HOST__ {
+    encode zstd gzip
+
+    @blockRefresh {
+        path /us-stock-20260629/crash-monitor/api/refresh
+        not remote_ip 127.0.0.1 ::1
+    }
+    respond @blockRefresh "refresh endpoint is private" 403
+
+    handle_path /us-stock-20260629/crash-monitor/* {
+        reverse_proxy 127.0.0.1:__LOCAL_PORT__
+    }
+}

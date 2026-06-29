@@ -1,0 +1,8 @@
+node_modules/
+.env
+config.json
+state.json
+data/state.json
+build/
+dist/
+server/assets.generated.js

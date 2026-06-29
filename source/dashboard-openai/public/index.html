@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>美股崩盘概率 · 风险终端</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,500;1,9..144,600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="fx-grain" aria-hidden="true"></div>
+  <div class="fx-scan" aria-hidden="true"></div>
+
+  <!-- 配置向导（未配置 / 点设置时显示） -->
+  <div id="setup" class="setup hidden">
+    <form id="setup-form" class="setup-card">
+      <div class="eyebrow"><span class="live"><i></i>SETUP</span> 配置大模型</div>
+      <h2 class="setup-title">接入你的大模型</h2>
+      <p class="setup-sub">支持 OpenAI 官方接口或兼容 OpenAI Responses API 的端点。配置保存在本程序同目录的 <code>config.json</code>。</p>
+
+      <label>API Key <span class="req">*</span>
+        <input id="su-key" type="password" placeholder="sk-..." autocomplete="off" />
+      </label>
+      <label>Base URL <span class="opt">（选填，留空=官方端点）</span>
+        <input id="su-url" type="text" placeholder="https://api.openai.com/v1" autocomplete="off" />
+      </label>
+      <label>模型名称
+        <input id="su-model" type="text" placeholder="gpt-5.5" autocomplete="off" />
+      </label>
+
+      <div class="setup-actions">
+        <button id="su-test" type="button" class="btn btn-ghost">测试连接</button>
+        <button id="su-save" type="submit" class="btn btn-primary">保存并进入</button>
+      </div>
+      <div id="su-status" class="status"></div>
+    </form>
+  </div>
+
+  <!-- 仪表盘 -->
+  <div id="dashboard" class="hidden">
+    <div id="key-banner" class="banner hidden">
+      ⚠️ 未配置大模型 —— 点右上角 ⚙ 设置填入 API Key。
+    </div>
+
+    <header class="hero">
+      <div class="hero-inner">
+        <button id="open-settings" class="settings-btn" title="设置">⚙</button>
+        <div class="eyebrow">
+          <span class="live"><i></i>LIVE</span>
+          U.S. EQUITY · CRASH&nbsp;PROBABILITY&nbsp;INDEX
+        </div>
+        <h1 class="hero-zh">美股崩盘概率</h1>
+
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 300 300" aria-hidden="true">
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="5" result="b" />
+                <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+            <g transform="rotate(135 150 150)">
+              <circle class="zone zone-g" cx="150" cy="150" r="120" />
+              <circle class="zone zone-a" cx="150" cy="150" r="120" />
+              <circle class="zone zone-r" cx="150" cy="150" r="120" />
+              <circle id="gauge-value" class="gauge-value" cx="150" cy="150" r="120" filter="url(#glow)" />
+            </g>
+            <g id="gauge-ticks"></g>
+          </svg>
+          <div class="gauge-center">
+            <div id="prob" class="hero-prob">--.--<span class="pct">%</span></div>
+            <div id="risk-tag" class="risk-tag">— 等待数据 —</div>
+          </div>
+        </div>
+
+        <div class="hero-meta">
+          <span id="meta-model" class="mono">模型 —</span>
+          <span class="sep">/</span>
+          <span class="mono">更新 <span id="meta-updated">--</span></span>
+          <button id="refresh-all" class="btn btn-ghost">⟳ 立即刷新</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="ticker" aria-hidden="true"><div id="ticker-track" class="ticker-track"></div></div>
+
+    <main class="grid">
+      <section class="col">
+        <div class="col-head">
+          <span class="kicker">LIVE FEED</span>
+          <h2>动态监控项</h2>
+          <span class="hint">AI 每隔一段时间自动联网采集</span>
+        </div>
+        <div id="monitors" class="monitors"></div>
+
+        <details class="add-box">
+          <summary><span class="plus">＋</span> 新增动态监控</summary>
+          <p class="hint">用大白话写：要搜什么 / 搜到什么算数 / 它怎样影响美股崩盘概率。</p>
+          <textarea id="add-text" rows="4" placeholder="例如：监控国际油价。如果布伦特原油快速突破 100 美元，会推高通胀、压制美股估值，从而提高崩盘概率。"></textarea>
+          <button id="add-btn" class="btn btn-primary">让 AI 添加并采集</button>
+          <div id="add-status" class="status"></div>
+        </details>
+      </section>
+
+      <section class="col">
+        <div class="col-head">
+          <span class="kicker">TERMINAL</span>
+          <h2>与 AI 讨论数据</h2>
+          <span class="hint">基于当前监控台快照</span>
+        </div>
+        <div id="chat" class="chat"></div>
+        <form id="chat-form" class="chat-form">
+          <input id="chat-input" type="text" placeholder="问问 AI，比如：哪个因素最危险？" autocomplete="off" />
+          <button class="btn btn-primary" type="submit">发送</button>
+        </form>
+      </section>
+    </main>
+
+    <footer class="page-foot">
+      <span>基于高志凯「明年年底可能爆发金融危机」之思路 · AI 实时联网采集 · 仅供研究参考，非投资建议</span>
+    </footer>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
