@@ -60,16 +60,11 @@ final class RiskRefreshRunner {
         }
         long finished = System.currentTimeMillis();
         boolean success = riskOk;
-        boolean finalToday = isFinalToday(risk);
         if (isCancelled(cancellationSignal)) {
             Log.i(TAG, "Refresh job cancelled before completion bookkeeping: " + reason);
             return Result.cancelled();
         }
-        if (riskOk && finalToday) {
-            RiskRefreshScheduler.cancelRetry(appContext);
-        } else {
-            RiskRefreshScheduler.scheduleRetry(appContext, reason);
-        }
+        boolean finalToday = isFinalToday(risk);
         WidgetPrefs.markRefreshResult(
                 appContext,
                 finished,

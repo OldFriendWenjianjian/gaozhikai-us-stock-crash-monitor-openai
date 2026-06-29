@@ -18,12 +18,8 @@ public class RiskRefreshJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         String reason = params == null ? "job" : params.getExtras().getString("reason", "job");
-        boolean morningPriority = params != null && params.getExtras().getBoolean("morningPriority", false);
         if (!REFRESH_RUNNING.compareAndSet(false, true)) {
             Log.i(TAG, "Risk refresh job already running; skip duplicate trigger: " + reason);
-            if (morningPriority) {
-                RiskRefreshScheduler.scheduleRetry(this, "job-busy-" + reason);
-            }
             jobFinished(params, false);
             return false;
         }

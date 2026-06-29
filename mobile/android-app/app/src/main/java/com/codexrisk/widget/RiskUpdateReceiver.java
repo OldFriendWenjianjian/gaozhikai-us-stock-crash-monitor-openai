@@ -15,7 +15,6 @@ public class RiskUpdateReceiver extends BroadcastReceiver {
         RiskRefreshScheduler.schedule(context);
         Context appContext = context.getApplicationContext();
         RiskWidgetProvider.renderCached(appContext);
-        RiskRefreshScheduler.scheduleOneOffJob(appContext, "legacy-" + action);
-        Log.i(TAG, "Forwarded legacy scheduled refresh to job: " + action);
+        Log.i(TAG, "Legacy scheduled refresh now only refreshes the next 07:55 alarm: " + action);
     }
 }

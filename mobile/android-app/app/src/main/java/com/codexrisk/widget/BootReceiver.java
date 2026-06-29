@@ -18,7 +18,6 @@ public class BootReceiver extends BroadcastReceiver {
                 || ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED.equals(action)) {
             Log.i(TAG, "Scheduling widget refresh after " + action);
             RiskRefreshScheduler.schedule(context);
-            RiskRefreshScheduler.scheduleOneOffJob(context, action);
             RiskWidgetProvider.renderCached(context);
         }
     }

@@ -18,29 +18,20 @@ import java.util.concurrent.Executors;
 
 public class RiskWidgetProvider extends AppWidgetProvider {
     static final String ACTION_REFRESH = "com.codexrisk.widget.REFRESH";
-    static final String ACTION_TEST_DAILY_ALARM = "com.codexrisk.widget.TEST_DAILY_ALARM";
     private static final String TAG = "CodexRiskWidget";
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
     @Override
     public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
         RiskRefreshScheduler.schedule(context);
-        RiskRefreshScheduler.scheduleOneOffJob(context);
         renderCached(context);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent == null ? "" : intent.getAction();
-        if (ACTION_TEST_DAILY_ALARM.equals(action)) {
-            RiskRefreshScheduler.schedule(context);
-            RiskRefreshScheduler.scheduleTestDailyAlarm(context, 10_000L);
-            renderCached(context);
-            return;
-        }
         if (ACTION_REFRESH.equals(action) || AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)) {
             RiskRefreshScheduler.schedule(context);
-            RiskRefreshScheduler.scheduleOneOffJob(context, action);
             PendingResult pendingResult = goAsync();
             renderCached(context);
             pendingResult.finish();
@@ -57,7 +48,6 @@ public class RiskWidgetProvider extends AppWidgetProvider {
     public void onEnabled(Context context) {
         super.onEnabled(context);
         RiskRefreshScheduler.schedule(context);
-        RiskRefreshScheduler.scheduleOneOffJob(context);
         renderCached(context);
     }
 
@@ -120,9 +110,7 @@ public class RiskWidgetProvider extends AppWidgetProvider {
     private static boolean isScheduledRefreshAction(String action) {
         return RiskRefreshScheduler.ACTION_PRE_TARGET_REFRESH.equals(action)
                 || RiskRefreshScheduler.ACTION_VISIBLE_EDGE_REFRESH.equals(action)
-                || RiskRefreshScheduler.ACTION_DAILY_REFRESH.equals(action)
-                || RiskRefreshScheduler.ACTION_FALLBACK_REFRESH.equals(action)
-                || RiskRefreshScheduler.ACTION_RETRY_REFRESH.equals(action);
+                || RiskRefreshScheduler.ACTION_DAILY_REFRESH.equals(action);
     }
 
     private void handleScheduledRefresh(Context context, String action) {
