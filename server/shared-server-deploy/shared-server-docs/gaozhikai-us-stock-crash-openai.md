@@ -59,12 +59,12 @@ __PUBLIC_HOST__ {
 
 ## Morning Refresh Schedule
 
-- 08:00 Asia/Shanghai
+- 07:55 Asia/Shanghai
 
 Suggested units:
 
 - `gaozhikai-us-stock-crash-openai-refresh@.service`
-- `gaozhikai-us-stock-crash-openai-refresh-0800.timer`
+- `gaozhikai-us-stock-crash-openai-refresh-0755.timer`
 
 ## Deployment Verification
 

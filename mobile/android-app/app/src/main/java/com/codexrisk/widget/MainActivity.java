@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
             probabilityView.setText("--");
             stageView.setText("等待今日预测");
             triggerView.setText("关键触发因素：等待服务端生成今日结果");
-            summaryView.setText("挂件会在每天早上 8 点前自动刷新，不需要手动打开 App。");
+            summaryView.setText("挂件会在每天早上 7:55 开始自动刷新，不需要手动打开 App。");
             updateStatus("当前暂无本地缓存，正在等待首次同步。");
             return;
         }

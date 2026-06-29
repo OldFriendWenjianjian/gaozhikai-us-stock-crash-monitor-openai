@@ -111,7 +111,7 @@ public class RiskWidgetProvider extends AppWidgetProvider {
         views.setTextViewText(R.id.widget_action, snapshot == null ? "等待服务端生成今日预测" : firstNonEmpty(snapshot.keyTrigger, snapshot.action));
         views.setTextViewText(R.id.widget_updated, overrideStatus != null ? overrideStatus : (snapshot == null ? "等待更新" : snapshot.updatedText()));
         views.setTextViewText(R.id.widget_weather_today, snapshot == null ? "OpenAI 版" : firstNonEmpty(snapshot.summary, "OpenAI 版"));
-        views.setTextViewText(R.id.widget_weather_tomorrow, snapshot == null ? "08:00 前自动刷新" : firstNonEmpty(snapshot.model, "08:00 前自动刷新"));
+        views.setTextViewText(R.id.widget_weather_tomorrow, snapshot == null ? "07:55 自动刷新" : firstNonEmpty(snapshot.model, "07:55 自动刷新"));
         views.setOnClickPendingIntent(R.id.widget_root, settingsIntent(context));
         manager.updateAppWidget(ids, views);
         Log.i(TAG, "Updated widget views for " + ids.length + " widget(s)");
