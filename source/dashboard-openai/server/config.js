@@ -11,14 +11,17 @@ function numEnv(env, name, dflt) {
 
 export function buildConfig(env) {
   const baseURL = env.OPENAI_BASE_URL || env.ANTHROPIC_BASE_URL
+  const analysisModel = env.OPENAI_ANALYSIS_MODEL || env.LLM_MODEL || 'gpt-5.5'
   return {
     apiKey: env.OPENAI_API_KEY || env.ANTHROPIC_API_KEY || '',
     baseURL: baseURL && baseURL.trim() !== '' ? baseURL.trim() : undefined,
-    model: env.LLM_MODEL || 'gpt-5.5',
+    model: analysisModel,
+    analysisModel,
+    searchModel: env.OPENAI_SEARCH_MODEL || 'gpt-5.4-mini',
     basePath: env.BASE_PATH || '/',
     port: numEnv(env, 'PORT', 3000),
     baseline: numEnv(env, 'BASELINE', 15),
-    collectIntervalMinutes: numEnv(env, 'COLLECT_INTERVAL_MINUTES', 30),
+    collectIntervalMinutes: numEnv(env, 'COLLECT_INTERVAL_MINUTES', 0),
   }
 }
 

@@ -229,11 +229,12 @@ function toInputMessages(messages) {
 
 export function createLLM(config, ClientClass = OpenAI) {
   const client = buildClient(config, ClientClass)
-  const model = config.model
+  const analysisModel = config.analysisModel || config.model || 'gpt-5.5'
+  const searchModel = config.searchModel || 'gpt-5.4-mini'
 
   async function assessWithSearchTool(monitor) {
     return await withTimeout(client.responses.create({
-      model,
+      model: searchModel,
       input: [
         { role: 'system', content: [{ type: 'input_text', text: ASSESS_SYSTEM }] },
         { role: 'user', content: [{ type: 'input_text', text: buildAssessPrompt(monitor) }] },
@@ -258,7 +259,7 @@ export function createLLM(config, ClientClass = OpenAI) {
     } catch {
       const results = await searchWeb(monitor.searchQuery || monitor.title)
       const res = await client.responses.create({
-        model,
+        model: analysisModel,
         input: [
           { role: 'system', content: [{ type: 'input_text', text: ASSESS_SYSTEM }] },
           { role: 'user', content: [{ type: 'input_text', text: buildAssessPromptFromSearch(monitor, results) }] },
@@ -280,7 +281,7 @@ export function createLLM(config, ClientClass = OpenAI) {
 
   async function structure(text, existingIds) {
     const res = await client.responses.create({
-      model,
+      model: analysisModel,
       input: [{ role: 'user', content: [{ type: 'input_text', text: buildStructurePrompt(text) }] }],
       max_output_tokens: 1500,
     })
@@ -291,7 +292,7 @@ export function createLLM(config, ClientClass = OpenAI) {
 
   async function chatStream(messages, summary, onText) {
     const stream = await client.responses.stream({
-      model,
+      model: analysisModel,
       input: [
         { role: 'system', content: [{ type: 'input_text', text: `${CHAT_SYSTEM}\n\n当前监控台快照：\n${summary}` }] },
         ...toInputMessages(messages),

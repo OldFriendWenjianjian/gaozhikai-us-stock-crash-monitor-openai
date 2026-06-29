@@ -18,9 +18,13 @@ let llm = null
 let collector = null
 let timer = null
 
+function autoCollectEnabled() {
+  return !!cfg.apiKey && Number(cfg.collectIntervalMinutes) > 0
+}
+
 function resetScheduler() {
   if (timer) { clearInterval(timer); timer = null }
-  if (cfg.apiKey) {
+  if (autoCollectEnabled()) {
     timer = setInterval(() => {
       collector.collectAll(state, STATE_FILE).catch((e) => console.error('定时采集失败:', e))
     }, cfg.collectIntervalMinutes * 60 * 1000)
@@ -40,7 +44,16 @@ function requireKey(res) {
 }
 
 function healthPayload() {
-  return { ok: true, configured: !!cfg.apiKey, hasApiKey: !!cfg.apiKey, model: cfg.model, baseURL: cfg.baseURL || null, basePath: cfg.basePath || '/' }
+  return {
+    ok: true,
+    configured: !!cfg.apiKey,
+    hasApiKey: !!cfg.apiKey,
+    model: cfg.model,
+    analysisModel: cfg.analysisModel || cfg.model,
+    searchModel: cfg.searchModel || null,
+    baseURL: cfg.baseURL || null,
+    basePath: cfg.basePath || '/',
+  }
 }
 
 function requestOrigin(req) {
@@ -100,7 +113,7 @@ app.post('/api/test', async (req, res) => {
   const probe = {
     apiKey: (b.apiKey || '').trim(),
     baseURL: typeof b.baseURL === 'string' && b.baseURL.trim() ? b.baseURL.trim() : undefined,
-    model: (b.model || cfg.model || '').trim() || 'gpt-5.5',
+    model: (b.model || cfg.analysisModel || cfg.model || '').trim() || 'gpt-5.5',
   }
   if (!probe.apiKey) { res.status(400).json({ ok: false, error: '请填写 API Key' }); return }
   try { const r = await pingLLM(probe); res.json({ ok: true, sample: r.sample }) }
@@ -183,7 +196,7 @@ function listen(port, attemptsLeft) {
   server.on('listening', () => {
     const url = `http://localhost:${port}`
     console.log(`美股崩盘概率监控台 → ${url}`)
-    console.log(`模型: ${cfg.model}${cfg.baseURL ? ' @ ' + cfg.baseURL : ''}  配置: ${cfg.apiKey ? '已配置' : '未配置（请在网页里设置）'}`)
+    console.log(`模型: 分析 ${cfg.analysisModel || cfg.model} / 搜索 ${cfg.searchModel || 'gpt-5.4-mini'}${cfg.baseURL ? ' @ ' + cfg.baseURL : ''}  配置: ${cfg.apiKey ? '已配置' : '未配置（请在网页里设置）'}`)
     console.log(`数据目录: ${DIR}`)
     if (!process.env.NO_OPEN) openBrowser(url)
     if (cfg.apiKey && state.monitors.every((m) => !m.lastReading)) {

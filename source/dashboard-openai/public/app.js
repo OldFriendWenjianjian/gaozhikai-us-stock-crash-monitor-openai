@@ -160,7 +160,7 @@ async function getState() {
 async function health() {
   const r = await fetch('api/health')
   const h = await r.json()
-  $('#meta-model').textContent = `模型 ${h.model}`
+  $('#meta-model').textContent = `分析 ${h.analysisModel || h.model} / 搜索 ${h.searchModel || '-'}`
   if (!h.hasApiKey) $('#key-banner').classList.remove('hidden')
 }
 
@@ -319,7 +319,7 @@ async function init() {
   buildTicks()
   const r = await fetch('api/health')
   const h = await r.json()
-  $('#meta-model').textContent = `模型 ${h.model}`
+  $('#meta-model').textContent = `分析 ${h.analysisModel || h.model} / 搜索 ${h.searchModel || '-'}`
   if (!h.configured) { showSetup({ baseURL: h.baseURL || '', model: h.model || '' }); return }
   showDashboard()
   await getState()

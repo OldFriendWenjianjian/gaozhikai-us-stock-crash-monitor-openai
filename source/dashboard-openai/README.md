@@ -20,7 +20,7 @@ npm start                  # → http://localhost:3000
 | `OPENAI_BASE_URL` | 可选。留空用 OpenAI 官方端点；填兼容网关地址即可换端点 |
 | `LLM_MODEL` | 可选。默认 `gpt-5.5`，随时换型号 |
 | `BASE_PATH` | 可选。部署到共享服务器子路径时填写，例如 `/us-stock-20260629/crash-monitor/` |
-| `PORT` / `BASELINE` / `COLLECT_INTERVAL_MINUTES` | 可选 |
+| `PORT` / `BASELINE` / `COLLECT_INTERVAL_MINUTES` | 可选；默认 `COLLECT_INTERVAL_MINUTES=0`，表示关闭进程内循环采集 |
 
 > 换模型/端点：改 `.env` 重启即可。端点须兼容 OpenAI Responses API；
 > 换到不支持内置网页搜索工具的端点时，联网采集会降级（该项标记采集失败），其余功能照常。

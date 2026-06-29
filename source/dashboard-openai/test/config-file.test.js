@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { loadConfig, saveConfig } from '../server/config.js'
 
 // 隔离：清掉开发态 .env 注入的变量，使「默认值」断言确定
-for (const k of ['OPENAI_API_KEY', 'OPENAI_BASE_URL', 'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'LLM_MODEL', 'BASELINE', 'PORT', 'COLLECT_INTERVAL_MINUTES']) {
+for (const k of ['OPENAI_API_KEY', 'OPENAI_BASE_URL', 'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'LLM_MODEL', 'OPENAI_SEARCH_MODEL', 'OPENAI_ANALYSIS_MODEL', 'BASELINE', 'PORT', 'COLLECT_INTERVAL_MINUTES']) {
   delete process.env[k]
 }
 
@@ -16,6 +16,8 @@ test('loadConfig 无文件用默认', async () => {
   const dir = await tmp()
   const c = loadConfig(dir)
   assert.equal(c.model, 'gpt-5.5')
+  assert.equal(c.analysisModel, 'gpt-5.5')
+  assert.equal(c.searchModel, 'gpt-5.4-mini')
   assert.equal(c.baseline, 15)
   await rm(dir, { recursive: true, force: true })
 })

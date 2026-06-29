@@ -4,10 +4,10 @@
 
 ## 目录说明
 
-- `systemd/`: 常驻服务与晨间刷新定时器模板
+- `systemd/`: 常驻服务与晨间单次刷新定时器模板
 - `caddy/`: 反向代理路由片段
 - `env/`: 环境变量样例
-- `scripts/`: 07:45 / 07:55 / 08:00 晨间刷新脚本模板
+- `scripts/`: 08:00 晨间刷新脚本模板
 - `shared-server-docs/`: 可复制到 `SharedServerDocs/projects` 的项目接入文档草稿
 
 ## 推荐远端目录
@@ -54,8 +54,6 @@
 6. 执行 `systemctl daemon-reload`
 7. 启用常驻服务: `systemctl enable --now gaozhikai-us-stock-crash-openai.service`
 8. 启用晨间刷新定时器:
-   `systemctl enable --now gaozhikai-us-stock-crash-openai-refresh-0745.timer`
-   `systemctl enable --now gaozhikai-us-stock-crash-openai-refresh-0755.timer`
    `systemctl enable --now gaozhikai-us-stock-crash-openai-refresh-0800.timer`
 9. 把 `caddy/gaozhikai-us-stock-crash-openai.Caddyfile` 片段合并到现有站点后重载 Caddy
 
@@ -63,9 +61,8 @@
 
 - `gaozhikai-us-stock-crash-openai.service`: 常驻 Web 服务
 - `gaozhikai-us-stock-crash-openai-refresh@.service`: 晨间刷新模板服务
-- `gaozhikai-us-stock-crash-openai-refresh-0745.timer`: 07:45 刷新
-- `gaozhikai-us-stock-crash-openai-refresh-0755.timer`: 07:55 刷新
 - `gaozhikai-us-stock-crash-openai-refresh-0800.timer`: 08:00 刷新
+- `COLLECT_INTERVAL_MINUTES=0`: 关闭服务进程内循环采集，只保留早上一次
 
 ## 验证清单
 
