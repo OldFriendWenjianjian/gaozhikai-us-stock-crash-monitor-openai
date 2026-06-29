@@ -2,6 +2,9 @@ package com.codexrisk.widget;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -35,6 +38,7 @@ public class MainActivity extends Activity {
         exactAlarmButton = findViewById(R.id.exact_alarm_button);
         Button refreshButton = findViewById(R.id.refresh_button);
         Button openDashboardButton = findViewById(R.id.open_dashboard_button);
+        Button pinWidgetButton = findViewById(R.id.pin_widget_button);
 
         RiskRefreshScheduler.schedule(this);
         bindSnapshot(WidgetPrefs.loadRisk(this));
@@ -44,14 +48,16 @@ public class MainActivity extends Activity {
         refreshButton.setOnClickListener(view -> {
             RiskRefreshScheduler.schedule(this);
             RiskWidgetProvider.requestUpdate(this, "manual-openai-refresh");
-            bindSnapshot(WidgetPrefs.loadRisk(this));
             updateStatus("已请求立即刷新，挂件会自动同步");
+            refreshSnapshotAsync("manual-openai-refresh");
         });
         openDashboardButton.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(DASHBOARD_URL));
             startActivity(intent);
         });
+        pinWidgetButton.setOnClickListener(view -> requestPinWidget());
         RiskWidgetProvider.requestUpdate(this, "main-activity-open");
+        refreshSnapshotAsync("main-activity-open");
     }
 
     @Override
@@ -60,6 +66,7 @@ public class MainActivity extends Activity {
         RiskRefreshScheduler.schedule(this);
         bindSnapshot(WidgetPrefs.loadRisk(this));
         refreshExactAlarmUi();
+        refreshSnapshotAsync("resume");
     }
 
     private void bindSnapshot(RiskSnapshot snapshot) {
@@ -122,6 +129,52 @@ public class MainActivity extends Activity {
     private void updateStatus(String text) {
         if (statusView != null) {
             statusView.setText(text);
+        }
+    }
+
+    private void refreshSnapshotAsync(String reason) {
+        new Thread(() -> {
+            try {
+                RiskSnapshot snapshot = RiskRepository.fetchLatest();
+                WidgetPrefs.saveRisk(this, snapshot);
+                RiskWidgetProvider.render(this, snapshot, null);
+                runOnUiThread(() -> {
+                    bindSnapshot(snapshot);
+                    updateStatus("最近更新：" + snapshot.updatedText()
+                            + "\n来源：" + safe(snapshot.source, "openai_dashboard")
+                            + "\n状态：" + safe(snapshot.assessmentStatus, "final"));
+                });
+            } catch (Exception error) {
+                runOnUiThread(() -> {
+                    bindSnapshot(WidgetPrefs.loadRisk(this));
+                    updateStatus("自动同步未完成，将继续显示本地缓存。\n原因：" + error.getClass().getSimpleName()
+                            + "\n触发：" + reason);
+                });
+            }
+        }, "CodexRiskMainRefresh").start();
+    }
+
+    private void requestPinWidget() {
+        AppWidgetManager manager = AppWidgetManager.getInstance(this);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || manager == null || !manager.isRequestPinAppWidgetSupported()) {
+            updateStatus("当前桌面不支持一键添加挂件，请长按桌面手动添加“高志凯美股崩盘概率”挂件。");
+            return;
+        }
+        PendingIntent callback = PendingIntent.getBroadcast(
+                this,
+                2001,
+                new Intent(this, RiskWidgetProvider.class).setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE),
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+        boolean requested = manager.requestPinAppWidget(
+                new ComponentName(this, RiskWidgetProvider.class),
+                null,
+                callback
+        );
+        if (requested) {
+            updateStatus("已请求把桌面挂件固定到主屏。请在系统弹窗里确认添加。");
+        } else {
+            updateStatus("桌面没有接受挂件固定请求，请长按桌面手动添加。");
         }
     }
 
