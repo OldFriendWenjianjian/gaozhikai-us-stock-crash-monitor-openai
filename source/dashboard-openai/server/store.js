@@ -78,7 +78,7 @@ export async function loadState(filePath, baseline) {
     const raw = await readFile(filePath, 'utf8')
     return normalizeLoadedState(JSON.parse(raw))
   } catch (err) {
-    if (err.code === 'ENOENT') {
+    if (err.code === 'ENOENT' || err instanceof SyntaxError) {
       const state = createInitialState(baseline)
       await saveState(filePath, state)
       return state

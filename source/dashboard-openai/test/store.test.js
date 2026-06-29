@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtemp, readFile, rm } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -24,6 +24,17 @@ test('createInitialState 含预置项', () => {
 test('loadState 文件不存在则初始化并落盘', async () => {
   const { file, dir } = await tempFile()
   const s = await loadState(file, 15)
+  assert.equal(s.monitors.length, 6)
+  const raw = await readFile(file, 'utf8')
+  assert.ok(raw.includes('"baseline": 15'))
+  await rm(dir, { recursive: true, force: true })
+})
+
+test('loadState 文件损坏时自动重建', async () => {
+  const { file, dir } = await tempFile()
+  await writeFile(file, '', 'utf8')
+  const s = await loadState(file, 15)
+  assert.equal(s.baseline, 15)
   assert.equal(s.monitors.length, 6)
   const raw = await readFile(file, 'utf8')
   assert.ok(raw.includes('"baseline": 15'))
