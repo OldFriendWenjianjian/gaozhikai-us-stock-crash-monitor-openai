@@ -107,7 +107,7 @@
                 android:ellipsize="end"
                 android:gravity="end"
                 android:maxLines="2"
-                android:text="08:00 前自动刷新"
+                android:text="07:55 自动刷新"
                 android:textColor="@color/widget_muted"
                 android:textSize="10sp" />
         </LinearLayout>

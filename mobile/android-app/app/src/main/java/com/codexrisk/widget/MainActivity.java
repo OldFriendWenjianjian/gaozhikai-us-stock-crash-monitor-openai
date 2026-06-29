@@ -113,7 +113,7 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + getPackageName()));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(intent);
-            updateStatus("请允许精确定时，保证每天早上 8 点前完成刷新。");
+            updateStatus("请允许精确定时，保证每天早上 7:55 完成刷新。");
         } catch (Exception ignored) {
             updateStatus("请在系统设置中手动允许精确定时。");
         }

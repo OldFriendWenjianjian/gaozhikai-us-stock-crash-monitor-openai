@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:lineSpacingExtra="3dp"
-            android:text="挂件会在每天早上 8 点前自动刷新当日预测结果。你不需要手动点开 App 才刷新。"
+            android:text="挂件会在每天早上 7:55 开始自动刷新当日预测结果。你不需要手动点开 App 才刷新。"
             android:textColor="#A7B0BA"
             android:textSize="15sp" />
 
@@ -123,7 +123,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:text="为保证每天早上 8 点前准时刷新，请在系统中允许精确定时。"
+            android:text="为保证每天早上 7:55 准时刷新，请在系统中允许精确定时。"
             android:textColor="#E8C45C"
             android:textSize="13sp"
             android:visibility="gone" />
